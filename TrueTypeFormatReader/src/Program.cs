@@ -16,7 +16,8 @@ namespace TrueTypeFormatReader
 			//Console.WriteLine("Hello World!");
 			//Console.ReadKey();
 
-			System.IO.FileStream fileStream = System.IO.File.OpenRead("exampleInput.txt");
+			System.IO.FileStream fileStream = System.IO.File.OpenRead("FontAwesome.ttf");
+
 			byte[] byteBuffer = new byte[fileStream.Length];
 			fileStream.Read(byteBuffer, 0, byteBuffer.Length);
 
@@ -51,14 +52,18 @@ namespace TrueTypeFormatReader
 		public uint ScalerType, CheckSumAdjustment, MagicNumber;
 		public ushort SearchRange, EntrySelector, RangeShift;
 
-		ushort Flags, UnitsPerEm, xMin, yMin, xMax, yMax, macStyle, LowestRecPPEM,
+		ushort Flags, UnitsPerEm, xMin, yMin, xMax, yMax, MacStyle, LowestRecPPEM,
 			   FontDirectionHint, IndexToLocFormat, glyphDataFormat;
 
 		Decimal Version, FontRevision;
+		Int64 CreatedDate, ModifiedDate;
 
 		public TrueTypeFont(byte[] buffer)
 		{			
 			File = new BinaryReader(buffer);
+			Tables = new Dictionary<string, Table>();
+			ReadOffsetTables();
+			ReadHeadTable();
 		}
 
 		private void ReadOffsetTables()
@@ -75,7 +80,7 @@ namespace TrueTypeFormatReader
 				Table temp = new Table(File.getUint32(), File.getUint32(), File.getUint32());
 				Tables.Add(tag, temp);
 
-				if (!tag.Equals("Head"))
+				if (!tag.Equals("head"))
 				{
 					Debug.Assert(CalculateChecksum(temp.Offset, temp.Length) == temp.Checksum, "Table Checksum did not match Calculated Checksum");
 				}
@@ -92,13 +97,14 @@ namespace TrueTypeFormatReader
 				nLongs--;
 				sum += File.getUint32();
 			}
+			File.Seek(old);
 			return sum;
 		}
 
 		private void ReadHeadTable()
 		{
-			Debug.Assert(Tables.ContainsKey("Head"), "Head does not exist in True Type Tables");
-			File.Seek(Tables["Head"].Offset);
+			Debug.Assert(Tables.ContainsKey("head"), "head does not exist in True Type Tables");
+			File.Seek(Tables["head"].Offset);
 			Version = File.getFixed();
 			FontRevision = File.getFixed();
 			CheckSumAdjustment = File.getUint32();
@@ -106,6 +112,17 @@ namespace TrueTypeFormatReader
 			Debug.Assert(MagicNumber == 0x5F0F3CF5);
 			Flags = File.getUint16();
 			UnitsPerEm = File.getUint16();
+			CreatedDate = File.getDate();
+			ModifiedDate = File.getDate();
+			xMin = File.getFword();
+			yMin = File.getFword();
+			xMax = File.getFword();
+			yMax = File.getFword();
+			MacStyle = File.getUint16();
+			LowestRecPPEM = File.getUint16();
+			FontDirectionHint = File.getUint16();
+			IndexToLocFormat = File.getUint16();
+			glyphDataFormat = File.getUint16();
 		}
 	}
 
