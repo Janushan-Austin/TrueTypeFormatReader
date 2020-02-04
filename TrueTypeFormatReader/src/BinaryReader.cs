@@ -23,6 +23,11 @@ namespace TrueTypeFormatReader
 			return OldPos;
 		}
 
+		public uint Tell()
+		{
+			return Pos;
+		}
+
 		public byte getUint8()
 		{
 			byte result = Data[Pos];
