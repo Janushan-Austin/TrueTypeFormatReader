@@ -18,16 +18,16 @@ namespace TrueTypeFormatReader
 			//Console.WriteLine("Hello World!");
 			//Console.ReadKey();
 
-			System.IO.FileStream fileStream = System.IO.File.OpenRead("FontAwesome.ttf");
+			//System.IO.FileStream fileStream = System.IO.File.OpenRead("FontAwesome.ttf");
 
-			byte[] byteBuffer = new byte[fileStream.Length];
-			fileStream.Read(byteBuffer, 0, byteBuffer.Length);
+			//byte[] byteBuffer = new byte[fileStream.Length];
+			//fileStream.Read(byteBuffer, 0, byteBuffer.Length);
 
 
-			TrueTypeFont ttr = new TrueTypeFont(byteBuffer);
+			//TrueTypeFont ttr = new TrueTypeFont(byteBuffer);
 
 			//make own windows form manually
-			GlyphForm form = new GlyphForm();
+			GlyphForm form = new GlyphForm("FontAwesome.ttf");
 			form.ClientSize = new System.Drawing.Size(800, 600);
 			form.Show();
 			
@@ -44,7 +44,7 @@ namespace TrueTypeFormatReader
 				timeLast = timeNow;
 
 				form.Update(deltaTime);
-				form.Draw();
+				form.DrawGlyph(0,0);
 				
 
 				Application.DoEvents();
@@ -52,7 +52,7 @@ namespace TrueTypeFormatReader
 
 			//Application.Run(form);
 
-			System.Console.Read();
+			//System.Console.Read();
 
 
 			// Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
@@ -60,58 +60,12 @@ namespace TrueTypeFormatReader
 	}
 
 
-	public class TrueTypeFont
+	public partial class TrueTypeFont
 	{
-		public struct Table
-		{
-			public uint Checksum, Offset, Length;
-
-			public Table(uint sum, uint offset, uint length)
-			{
-				Checksum = sum;
-				Offset = offset;
-				Length = length;
-			}
-		}
-
-		public struct Point
-		{
-			public bool OnCurve;
-			public int X, Y;
-			public bool IsFirst;
-			public Point(bool onCurve)
-			{
-				OnCurve = onCurve;
-				X = Y = 0;
-				IsFirst = false;
-			}
-		}
-
-		public class Glyph
-		{
-			public short NumberOfContours;
-			public ushort xMin, yMin, xMax, yMax;
-
-			public string Type;
-			public ushort[] ContourEnds;
-			public Point[] Points;
-
-			public Glyph(short num, ushort xmin, ushort xmax, ushort ymin, ushort ymax)
-			{
-				NumberOfContours = num;
-				xMin = xmin;
-				yMin = ymin;
-				xMax = xmax;
-				yMax = ymax;
-
-				Type = "";
-				ContourEnds = null;
-				Points = null;
-			}
-		}
-
 		public BinaryReader File;
 		private Dictionary<string, Table> Tables;
+
+		Format4Table Format4;
 
 		public uint ScalerType, CheckSumAdjustment, MagicNumber;
 		public ushort SearchRange, EntrySelector, RangeShift;
@@ -130,6 +84,7 @@ namespace TrueTypeFormatReader
 			ReadOffsetTables();
 			ReadHeadTable();
 			Length = GetGlyphCount();
+			ReadFormats();
 		}
 
 		private void ReadOffsetTables()
