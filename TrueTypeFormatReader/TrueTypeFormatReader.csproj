@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\BinaryReader.cs" />
+    <Compile Include="src\GlyphForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\GlyphForm.Designer.cs">
+      <DependentUpon>GlyphForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,6 +64,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\GlyphForm.resx">
+      <DependentUpon>GlyphForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
