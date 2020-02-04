@@ -27,28 +27,25 @@ namespace TrueTypeFormatReader
 			TrueTypeFont ttr = new TrueTypeFont(byteBuffer);
 
 			//make own windows form manually
-			System.Windows.Forms.Form form = new Form();
+			GlyphForm form = new GlyphForm();
 			form.ClientSize = new System.Drawing.Size(800, 600);
-			PictureBox picCanvas = new PictureBox();
-			picCanvas.Size = new Size(form.ClientSize.Width, form.ClientSize.Height);
-			Bitmap bm = new Bitmap(picCanvas.Width, picCanvas.Height);
-			picCanvas.Image = bm;
-			form.CreateGraphics();
-			form.Controls.Add(picCanvas);
-			form.Activate();
+			form.Show();
+			
 
 			
-			form.Show();
 
+			
+			DateTime timeLast = DateTime.Now;
 
-			while (true)
+			while (form.Visible)
 			{
-				Graphics g = Graphics.FromImage(bm);
-				g.Clear(Color.Black);
-				picCanvas.Image = bm;
+				DateTime timeNow = DateTime.Now;
+				float deltaTime = (float)timeNow.Subtract(timeLast).TotalMilliseconds;
+				timeLast = timeNow;
 
-				form.Update();
-				form.Refresh();
+				form.Update(deltaTime);
+				form.Draw();
+				
 
 				Application.DoEvents();
 			}
