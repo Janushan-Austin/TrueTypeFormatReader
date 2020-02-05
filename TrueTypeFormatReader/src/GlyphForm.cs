@@ -87,7 +87,7 @@ namespace TrueTypeFormatReader
 			picCanvas.Invalidate();
 		}
 
-		public void DrawGlyph(int x, int y)
+		public void DrawGlyph(int xPos, int yPos)
 		{
 			TrueTypeFont.Glyph glyph = TrueFont.ReadGlyph(GlyphIndex);
 
@@ -112,14 +112,14 @@ namespace TrueTypeFormatReader
 				if(first == 1)
 				{
 					first = 0;
-					firstX = (glyph.Points[p].X * FontScale + FontScale*(-TrueFont.xMin)) + x;
-					firstY = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + y;
+					firstX = (glyph.Points[p].X * FontScale + FontScale*(-TrueFont.xMin)) + xPos;
+					firstY = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yPos;
 					fullPath.StartFigure();
 				}
 				else
 				{
-					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + x;
-					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + y;
+					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + xPos;
+					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yPos;
 					g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y);
 
 					fullPath.AddLine(firstX, firstY, X, Y);
