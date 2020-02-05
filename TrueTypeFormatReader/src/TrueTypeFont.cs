@@ -102,7 +102,7 @@ namespace TrueTypeFormatReader
 			public ushort[] ContourEnds;
 			public Point[] Points;
 
-			public Glyph(short num, short xmin, short xmax, short ymin, short ymax)
+			public Glyph(short num, short xmin, short ymin, short xmax, short ymax)
 			{
 				NumberOfContours = num;
 				xMin = xmin;

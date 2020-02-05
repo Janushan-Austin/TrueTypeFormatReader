@@ -13,7 +13,7 @@ namespace TrueTypeFormatReader
 	public partial class GlyphForm : Form
 	{
 		private float GlyphTime = 0.0f;
-		uint GlyphIndex = 36;
+		uint GlyphIndex = 0;
 
 		TrueTypeFont TrueFont;
 		PictureBox picCanvas;
@@ -129,7 +129,7 @@ namespace TrueTypeFormatReader
 				{
 					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + xOffset;
 					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yOffset;
-					//g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y); used for manually drawing glyphs, but does not fill them
+					//g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y); //used for manually drawing glyphs, but does not fill them
 
 					fullPath.AddLine(firstX, firstY, X, Y);
 
@@ -146,6 +146,7 @@ namespace TrueTypeFormatReader
 				p++;
 			}
 
+			//g.DrawPath(new Pen(Color.Black, 1), fullPath);
 			g.FillPath(new SolidBrush(Color.Black), fullPath);
 			picCanvas.Invalidate();
 		}
