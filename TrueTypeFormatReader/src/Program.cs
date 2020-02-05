@@ -27,7 +27,7 @@ namespace TrueTypeFormatReader
 			//TrueTypeFont ttr = new TrueTypeFont(byteBuffer);
 
 			//make own windows form manually
-			GlyphForm form = new GlyphForm("FontAwesome.ttf");
+			GlyphForm form = new GlyphForm("arial.ttf");
 			form.ClientSize = new System.Drawing.Size(800, 600);
 			form.Show();
 			
@@ -44,7 +44,7 @@ namespace TrueTypeFormatReader
 				timeLast = timeNow;
 
 				form.Update(deltaTime);
-				form.DrawGlyph(0,0);
+				form.DrawGlyph(500,100);
 				
 
 				Application.DoEvents();
@@ -70,9 +70,11 @@ namespace TrueTypeFormatReader
 		public uint ScalerType, CheckSumAdjustment, MagicNumber;
 		public ushort SearchRange, EntrySelector, RangeShift;
 
-		ushort Flags, UnitsPerEm, xMin, yMin, xMax, yMax, MacStyle, LowestRecPPEM,
+		public ushort Flags, UnitsPerEm, MacStyle, LowestRecPPEM,
 			   FontDirectionHint, IndexToLocFormat, glyphDataFormat;
 		public ushort Length;
+
+		public short xMin, yMin, xMax, yMax;
 
 		Decimal Version, FontRevision;
 		Int64 CreatedDate, ModifiedDate;
@@ -135,10 +137,10 @@ namespace TrueTypeFormatReader
 			UnitsPerEm = File.getUint16();
 			CreatedDate = File.getDate();
 			ModifiedDate = File.getDate();
-			xMin = File.getFword();
-			yMin = File.getFword();
-			xMax = File.getFword();
-			yMax = File.getFword();
+			xMin = (short)File.getFword();
+			yMin = (short)File.getFword();
+			xMax = (short)File.getFword();
+			yMax = (short)File.getFword();
 			MacStyle = File.getUint16();
 			LowestRecPPEM = File.getUint16();
 			FontDirectionHint = File.getUint16();
@@ -168,7 +170,7 @@ namespace TrueTypeFormatReader
 
 			File.Seek(offset);
 
-			Glyph glyph = new Glyph(File.getInt16(), File.getFword(), File.getFword(), File.getFword(), File.getFword());
+			Glyph glyph = new Glyph(File.getInt16(), (short)File.getFword(), (short)File.getFword(), (short)File.getFword(), (short)File.getFword());
 
 			Debug.Assert(glyph.NumberOfContours >= -1);
 
@@ -196,14 +198,15 @@ namespace TrueTypeFormatReader
 
 			glyph.Type = "simple";
 			glyph.ContourEnds = new ushort[glyph.NumberOfContours];
-			glyph.Points = new Point[glyph.NumberOfContours + 1];
-			ref Point[] points = ref glyph.Points;
-			byte[] flags = new byte[points.Length];
 
 			for (var i = 0; i < glyph.NumberOfContours; i++)
 			{
 				glyph.ContourEnds[i] = File.getUint16();
 			}
+
+			glyph.Points = new Point[FindMaxContour(glyph.ContourEnds) + 1];
+			ref Point[] points = ref glyph.Points;
+			byte[] flags = new byte[points.Length];
 
 			// skip over intructions
 			File.Seek(File.getUint16() + File.Tell());
@@ -236,7 +239,7 @@ namespace TrueTypeFormatReader
 			ReadCoords(ref glyph, flags, "Y", Y_IS_BYTE, Y_DELTA, glyph.yMin, glyph.yMax);
 		}
 
-		private void ReadCoords(ref Glyph glyph, byte[] flags, string name, byte byteFlag, byte deltaFlag, ushort min, ushort max)
+		private void ReadCoords(ref Glyph glyph, byte[] flags, string name, byte byteFlag, byte deltaFlag, short min, short max)
 		{
 			int value = 0;
 
@@ -294,6 +297,24 @@ namespace TrueTypeFormatReader
 			File.Seek(old);
 
 			return offset + Tables["glyf"].Offset;
+		}
+
+		private ushort FindMaxContour(ushort[] contours)
+		{
+			if(contours == null || contours.Length == 0)
+			{
+				return 0;
+			}
+			ushort max = contours[0];
+			for(uint i=1; i<contours.Length; i++)
+			{
+				if(contours[i] > max)
+				{
+					max = contours[i];
+				}
+			}
+
+			return max;
 		}
 	}
 

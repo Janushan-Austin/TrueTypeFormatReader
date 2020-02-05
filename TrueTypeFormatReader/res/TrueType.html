@@ -261,6 +261,7 @@ TrueTypeFont.prototype = {
         assert(offset < this.tables["glyf"].offset + this.tables["glyf"].length);
 
         file.seek(offset);
+        console.log("offset: ", offset);
 
         var glyph = {
             numberOfContours: file.getInt16(),
@@ -306,6 +307,9 @@ TrueTypeFont.prototype = {
         }
 
         var numPoints = Math.max.apply(null, glyph.contourEnds) + 1;
+        console.log("numPoints: ", numPoints);
+        console.log("numberOfContours: ", glyph.numberOfContours);
+        console.log("contourEnds: ", glyph.contourEnds);
 
         var flags = [];
 
@@ -461,7 +465,7 @@ function ShowTtfFile(arrayBuffer)
     var height = font.yMax - font.yMin;
     var scale = 64 / font.unitsPerEm;
 
-    console.log(width, height, scale, font.length);
+    console.log("Width: ", width, "height: ", height, "xMax: ", font.xMax, "xMin: ", font.xMin, "yMax: ", font.yMax, "yMin: ", font.yMin);
 
     var container = document.getElementById("contents");
 
@@ -469,7 +473,7 @@ function ShowTtfFile(arrayBuffer)
         container.removeChild(container.firstChild);
     }
 
-    for( var i = 0; i < font.length; i++ ) {
+    for( var i = 0; i < 1; i++ ) {
         var canvas = document.createElement("canvas");
         canvas.style.border = "1px solid gray";
         canvas.width = width * scale;
@@ -477,7 +481,7 @@ function ShowTtfFile(arrayBuffer)
         var ctx = canvas.getContext("2d");
         ctx.fillStyle = "#000000";
         ctx.scale(scale, -scale);
-        ctx.translate(-font.xMin, -font.yMin - height);
+        ctx.translate(-font.xMin,  -font.yMax);
         ctx.beginPath();
         if (font.drawGlyph(i, ctx)) {
             ctx.fill();

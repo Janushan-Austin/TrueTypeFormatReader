@@ -13,7 +13,7 @@ namespace TrueTypeFormatReader
 	public partial class GlyphForm : Form
 	{
 		private float GlyphTime = 0.0f;
-		uint GlyphIndex = 0;
+		uint GlyphIndex = 36;
 
 		TrueTypeFont TrueFont;
 		PictureBox picCanvas;
@@ -55,15 +55,17 @@ namespace TrueTypeFormatReader
 
 
 			TrueFont = new TrueTypeFont(byteBuffer);
+
+			FontScale = 0.05f;//64.0f / TrueFont.UnitsPerEm; //64 is Font size, hard coded for now
 		}
 
 		public void Update(float deltaTime)
 		{
-			GlyphTime += deltaTime;
+			//GlyphTime += deltaTime;
 			if (GlyphTime >= 500.0)
 			{
 				GlyphTime -= 500;
-				GlyphIndex++;
+				//GlyphIndex++;
 				if (GlyphIndex >= 0)
 				{
 					GlyphIndex = 0;
@@ -98,33 +100,52 @@ namespace TrueTypeFormatReader
 				picCanvas.Image = CreateCanvasBitmap(picCanvas.Width, picCanvas.Height);
 			}
 			Graphics g = Graphics.FromImage(picCanvas?.Image);
-			g.Clear(Color.Black);
+			g.Clear(Color.HotPink);
+
+			System.Drawing.Drawing2D.GraphicsPath fullPath = new System.Drawing.Drawing2D.GraphicsPath();
+			System.Drawing.Drawing2D.GraphicsPath contourPath = new System.Drawing.Drawing2D.GraphicsPath();
 
 			int p=0, c= 0, first = 1;
-			int firstX = 0, firstY = 0;
+			float firstX = 0, firstY = 0;
 			while(p < glyph.Points.Length)
 			{
 				if(first == 1)
 				{
 					first = 0;
-					firstX = glyph.Points[p].X;
-					firstY = glyph.Points[p].Y;
+					firstX = (glyph.Points[p].X * FontScale + FontScale*(-TrueFont.xMin)) + x;
+					firstY = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + y;
+					fullPath.StartFigure();
 				}
 				else
 				{
-					g.DrawLine(new Pen(Color.White), firstX, firstY, glyph.Points[p].X, glyph.Points[p].Y);
+					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + x;
+					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + y;
+					g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y);
+
+					fullPath.AddLine(firstX, firstY, X, Y);
+					//fullPath.PathPoints.Append(new PointF(X, X));
+
+					firstX = X;
+					firstY = y;
 				}
 
 				if(p == glyph.ContourEnds[c])
 				{
 					c++;
 					first = 1;
+					//fullPath.AddPath(contourPath, true);
+					//contourPath.Reset();
+					fullPath.CloseFigure();
 				}
 				p++;
 			}
 
+			if(contourPath.PointCount > 0)
+			{
+				fullPath.AddPath(contourPath, false);
+			}
 
-			g.DrawLine(new Pen(Color.HotPink), 0, 0, picCanvas.Width, picCanvas.Height);
+			g.DrawPath(new Pen(Color.White, 1), fullPath);
 			picCanvas.Invalidate();
 
 		}

@@ -96,13 +96,13 @@ namespace TrueTypeFormatReader
 		public class Glyph
 		{
 			public short NumberOfContours;
-			public ushort xMin, yMin, xMax, yMax;
+			public short xMin, yMin, xMax, yMax;
 
 			public string Type;
 			public ushort[] ContourEnds;
 			public Point[] Points;
 
-			public Glyph(short num, ushort xmin, ushort xmax, ushort ymin, ushort ymax)
+			public Glyph(short num, short xmin, short xmax, short ymin, short ymax)
 			{
 				NumberOfContours = num;
 				xMin = xmin;
