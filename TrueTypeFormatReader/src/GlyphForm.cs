@@ -126,7 +126,7 @@ namespace TrueTypeFormatReader
 					//fullPath.PathPoints.Append(new PointF(X, X));
 
 					firstX = X;
-					firstY = y;
+					firstY = Y;
 				}
 
 				if(p == glyph.ContourEnds[c])
