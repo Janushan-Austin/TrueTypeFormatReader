@@ -44,7 +44,7 @@ namespace TrueTypeFormatReader
 				timeLast = timeNow;
 
 				form.Update(deltaTime);
-				form.DrawGlyph(500,100);
+				form.DrawGlyph(form.ClientSize.Width/2,form.ClientSize.Height -50);
 				
 
 				Application.DoEvents();

@@ -61,12 +61,12 @@ namespace TrueTypeFormatReader
 
 		public void Update(float deltaTime)
 		{
-			//GlyphTime += deltaTime;
+			GlyphTime += deltaTime;
 			if (GlyphTime >= 500.0)
 			{
-				GlyphTime -= 500;
-				//GlyphIndex++;
-				if (GlyphIndex >= 0)
+				GlyphTime -= 500 * (int)GlyphTime/500;
+				GlyphIndex++;
+				if (GlyphIndex >= TrueFont.Length)
 				{
 					GlyphIndex = 0;
 				}
@@ -87,7 +87,7 @@ namespace TrueTypeFormatReader
 			picCanvas.Invalidate();
 		}
 
-		public void DrawGlyph(int xPos, int yPos)
+		public void DrawGlyph(int xDrawPos, int yDrawPos)
 		{
 			TrueTypeFont.Glyph glyph = TrueFont.ReadGlyph(GlyphIndex);
 
@@ -103,51 +103,51 @@ namespace TrueTypeFormatReader
 			g.Clear(Color.HotPink);
 
 			System.Drawing.Drawing2D.GraphicsPath fullPath = new System.Drawing.Drawing2D.GraphicsPath();
-			System.Drawing.Drawing2D.GraphicsPath contourPath = new System.Drawing.Drawing2D.GraphicsPath();
 
 			int p=0, c= 0, first = 1;
 			float firstX = 0, firstY = 0;
+			float xOffset =0, yOffset = 0;
+			bool offsetsSet = false;
 			while(p < glyph.Points.Length)
 			{
 				if(first == 1)
 				{
 					first = 0;
-					firstX = (glyph.Points[p].X * FontScale + FontScale*(-TrueFont.xMin)) + xPos;
-					firstY = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yPos;
+					firstX = (glyph.Points[p].X * FontScale + FontScale*(-TrueFont.xMin));
+					firstY = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax);
+					if(offsetsSet == false)
+					{
+						offsetsSet = true;
+						xOffset = xDrawPos - firstX;
+						yOffset = yDrawPos - FontScale * (TrueFont.yMax - TrueFont.yMin);
+					}
+					firstX += xOffset;
+					firstY += yOffset;
 					fullPath.StartFigure();
 				}
 				else
 				{
-					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + xPos;
-					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yPos;
-					g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y);
+					float X = (glyph.Points[p].X * FontScale + FontScale * (-TrueFont.xMin)) + xOffset;
+					float Y = (glyph.Points[p].Y * -FontScale + FontScale * TrueFont.yMax) + yOffset;
+					//g.DrawLine(new Pen(Color.White, 1), firstX - 200, firstY, X - 200, Y); used for manually drawing glyphs, but does not fill them
 
 					fullPath.AddLine(firstX, firstY, X, Y);
-					//fullPath.PathPoints.Append(new PointF(X, X));
 
 					firstX = X;
-					firstY = Y;
+					firstY = Y;					
 				}
 
 				if(p == glyph.ContourEnds[c])
 				{
 					c++;
 					first = 1;
-					//fullPath.AddPath(contourPath, true);
-					//contourPath.Reset();
 					fullPath.CloseFigure();
 				}
 				p++;
 			}
 
-			if(contourPath.PointCount > 0)
-			{
-				fullPath.AddPath(contourPath, false);
-			}
-
-			g.DrawPath(new Pen(Color.White, 1), fullPath);
+			g.FillPath(new SolidBrush(Color.Black), fullPath);
 			picCanvas.Invalidate();
-
 		}
 
 		public void ResizeFormEvent(object sender, EventArgs e)
