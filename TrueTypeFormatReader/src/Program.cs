@@ -45,6 +45,7 @@ namespace TrueTypeFormatReader
 
                 form.Update(deltaTime);
                 form.DrawGlyph(form.ClientSize.Width / 2, form.ClientSize.Height/2);
+                //form.DrawGlyph(0,0);
 
 
                 Application.DoEvents();

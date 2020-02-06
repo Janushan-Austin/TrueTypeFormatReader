@@ -65,7 +65,7 @@ namespace TrueTypeFormatReader
 			if (GlyphTime >= 500.0)
 			{
 				GlyphTime -= 500 * (int)GlyphTime/500;
-				GlyphIndex++;
+				//GlyphIndex++;
 				if (GlyphIndex >= TrueFont.Length)
 				{
 					GlyphIndex = 0;
@@ -120,8 +120,8 @@ namespace TrueTypeFormatReader
 					if(offsetsSet == false)
 					{
 						offsetsSet = true;
-						xOffset = xDrawPos - (FontScale* (glyph.xMax - glyph.xMin) + FontScale*(-TrueFont.xMin))/2;
-						yOffset = yDrawPos - (-FontScale * (glyph.yMin - glyph.yMax) + FontScale*TrueFont.yMax)/2;
+						xOffset = xDrawPos - (FontScale * ((glyph.xMax - glyph.xMin) + (glyph.xMax - glyph.xMin) / 2));// + FontScale*(-TrueFont.xMin))/2;
+						yOffset = yDrawPos - (-FontScale * ((glyph.yMin - glyph.yMax) - (glyph.yMin - glyph.yMax) / 4));
 					}
 					firstX += xOffset;
 					firstY += yOffset;
