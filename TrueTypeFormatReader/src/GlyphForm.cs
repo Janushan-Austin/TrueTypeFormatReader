@@ -13,7 +13,7 @@ namespace TrueTypeFormatReader
 	public partial class GlyphForm : Form
 	{
 		private float GlyphTime = 0.0f;
-		uint GlyphIndex = 0;
+		uint GlyphIndex = 36;
 
 		TrueTypeFont TrueFont;
 		PictureBox picCanvas;
@@ -101,6 +101,8 @@ namespace TrueTypeFormatReader
 			}
 			Graphics g = Graphics.FromImage(picCanvas?.Image);
 			g.Clear(Color.HotPink);
+			g.DrawLine(new Pen(Color.Blue), picCanvas.Width / 2, 0, picCanvas.Width / 2, picCanvas.Height);
+			g.DrawLine(new Pen(Color.Blue), 0, picCanvas.Height / 2, picCanvas.Width, picCanvas.Height/2);
 
 			System.Drawing.Drawing2D.GraphicsPath fullPath = new System.Drawing.Drawing2D.GraphicsPath();
 
@@ -118,8 +120,8 @@ namespace TrueTypeFormatReader
 					if(offsetsSet == false)
 					{
 						offsetsSet = true;
-						xOffset = xDrawPos - firstX;
-						yOffset = yDrawPos - FontScale * (TrueFont.yMax - TrueFont.yMin);
+						xOffset = xDrawPos - (FontScale* (glyph.xMax - glyph.xMin) + FontScale*(-TrueFont.xMin))/2;
+						yOffset = yDrawPos - (-FontScale * (glyph.yMin - glyph.yMax) + FontScale*TrueFont.yMax)/2;
 					}
 					firstX += xOffset;
 					firstY += yOffset;
