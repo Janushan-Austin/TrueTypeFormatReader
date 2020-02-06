@@ -100,10 +100,10 @@ namespace TrueTypeFormatReader
 				picCanvas.Image = CreateCanvasBitmap(picCanvas.Width, picCanvas.Height);
 			}
 			Graphics g = Graphics.FromImage(picCanvas?.Image);
-			g.Clear(Color.HotPink);
-			g.DrawLine(new Pen(Color.Blue), picCanvas.Width / 2, 0, picCanvas.Width / 2, picCanvas.Height);
-			g.DrawLine(new Pen(Color.Blue), 0, picCanvas.Height / 2, picCanvas.Width, picCanvas.Height/2);
-
+			g.Clear(Color.Teal);
+			g.DrawLine(new Pen(Color.Red), picCanvas.Width / 2, 0, picCanvas.Width / 2, picCanvas.Height);
+			g.DrawLine(new Pen(Color.Red), 0, picCanvas.Height / 2, picCanvas.Width, picCanvas.Height/2);
+			g.DrawRectangle(new Pen(Color.Magenta), xDrawPos -5, yDrawPos -5, 10, 10);
 			System.Drawing.Drawing2D.GraphicsPath fullPath = new System.Drawing.Drawing2D.GraphicsPath();
 
 			int p=0, c= 0, first = 1;
